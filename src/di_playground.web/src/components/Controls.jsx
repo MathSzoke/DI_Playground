@@ -50,7 +50,7 @@ export default function Controls() {
                 </div>
             </div>
 
-            <Divider vertical style={{ maxHeight: '100px', alignSelf: 'center' }} />
+            <Divider vertical style={{ maxWidth: '50px'}} />
 
             <div className={s.container}>
                 <Text weight="semibold">Captive Dependency bugs (Singleton)</Text>
