@@ -16,13 +16,13 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Restore
-        run: dotnet restore ./DI_Playground.Api/DI_Playground.Api.csproj
+        run: dotnet restore ./src/DI_Playground.Api/DI_Playground.Api.csproj
 
       - name: Build
-        run: dotnet build ./DI_Playground.Api/DI_Playground.Api.csproj --configuration Release --no-restore
+        run: dotnet build ./src/DI_Playground.Api/DI_Playground.Api.csproj --configuration Release --no-restore
 
       - name: Publish
-        run: dotnet publish ./DI_Playground.Api/DI_Playground.Api.csproj -c Release -o "$GITHUB_WORKSPACE/publish" --no-build
+        run: dotnet publish ./src/DI_Playground.Api/DI_Playground.Api.csproj -c Release -o "$GITHUB_WORKSPACE/publish" --no-build
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

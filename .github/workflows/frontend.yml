@@ -28,7 +28,7 @@ jobs:
 
       - name: Install & Build
         run: |
-          cd ./di_playground.web
+          cd ./src/di_playground.web
           npm ci || npm install --no-audit --no-fund
           npm run build
         env:
