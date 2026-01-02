@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/DI_Playground.Api/DI_Playground.Api.csproj" />
+    <Project Path="src/DI_Playground.AppHost/DI_Playground.AppHost.csproj" />
+    <Project Path="src/DI_Playground.ServiceDefaults/DI_Playground.ServiceDefaults.csproj" />
+    <Project Path="src/DI_Playground.Tests/DI_Playground.Tests.csproj" />
+    <Project Path="src/di_playground.web/di_playground.web.esproj">
+      <Build />
+      <Deploy />
+    </Project>
+  </Folder>
+</Solution>
