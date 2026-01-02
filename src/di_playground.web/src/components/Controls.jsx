@@ -39,7 +39,7 @@ export default function Controls() {
                     </Button>
                 </div>
             </div>
-            <Divider vertical />
+            <Divider vertical style={{ maxWidth: '50px' }} />
             <div className={s.container}>
 
                 <Text weight="semibold">Captive Dependency bugs (Singleton)</Text>
