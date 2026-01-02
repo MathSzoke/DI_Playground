@@ -43,7 +43,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./di_playground.web/dist
+          path: ./src/di_playground.web/dist
 
   deploy:
     runs-on: ubuntu-latest
