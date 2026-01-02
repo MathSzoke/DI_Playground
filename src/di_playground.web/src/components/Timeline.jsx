@@ -8,11 +8,15 @@ const useStyles = makeStyles({
     },
     requestRow: {
         display: "grid",
-        gridTemplateColumns: "100px 1fr",
+        gridTemplateColumns: "150px 1fr",
         alignItems: "center",
         gap: "12px",
         padding: "12px 0",
-        borderBottom: "1px solid #333"
+        borderBottom: "1px solid #333",
+        "@media (max-width: 600px)": {
+            gridTemplateColumns: "1fr",
+            gap: "4px"
+        }
     },
     track: {
         position: "relative",
@@ -33,7 +37,9 @@ const useStyles = makeStyles({
         color: "white",
         fontWeight: "bold",
         transition: "all 0.2s ease-in-out",
-        boxShadow: "2px 0 5px rgba(0,0,0,0.3)"
+        boxShadow: "2px 0 5px rgba(0,0,0,0.3)",
+        whiteSpace: "nowrap",
+        overflow: "hidden"
     },
     transient: { backgroundColor: "#f1c40f" },
     scoped: { backgroundColor: "#3498db" },
@@ -43,19 +49,17 @@ const useStyles = makeStyles({
 export default function Timeline({ events, requests }) {
     const s = useStyles();
 
-    const calculateStyles = (event, index, totalEvents) => {
+    const calculateStyles = (event, index) => {
         const type = event.lifetime.toLowerCase();
-        
         let sectionOffset = 0;
-        if (type === "scoped") sectionOffset = 35;
-        if (type === "singleton") sectionOffset = 70;
+
+        if (type.includes("scoped")) sectionOffset = 35;
+        if (type.includes("singleton")) sectionOffset = 70;
 
         const posInType = index % 3;
-        
         const left = sectionOffset + (posInType * 10);
-        
         let width = 33 - (posInType * 10);
-        
+
         if (sectionOffset === 70 && left + width > 98) {
             width = 98 - left;
         }
@@ -73,28 +77,28 @@ export default function Timeline({ events, requests }) {
             <Text weight="bold" size={400} style={{ color: "#fff", marginBottom: "10px" }}>
                 Lifecycle of instances
             </Text>
-            
+
             {requests.map((reqId) => {
                 const reqEvents = events.filter(e => e.requestId === reqId);
-                
+
                 return (
                     <div key={reqId} className={s.requestRow}>
-                        <Caption1 style={{ color: "#ccc" }}>
-                            RequestId: {reqId}
+                        <Caption1 style={{ color: "#ccc" }} truncate>
+                            ID: {reqId.substring(0, 13)}...
                         </Caption1>
-                        
+
                         <div className={s.track}>
                             {reqEvents.map((e, i) => {
-                                const styles = calculateStyles(e, i, reqEvents.length);
-                                
+                                const styles = calculateStyles(e, i);
+
                                 return (
                                     <div
                                         key={i}
-                                        className={`${s.bar} ${s[e.lifetime.toLowerCase()]}`}
+                                        className={`${s.bar} ${s[e.lifetime.toLowerCase().split(' ')[0]] || s.transient}`}
                                         style={styles}
                                         title={`${e.lifetime} | InstanceID: ${e.instanceId}`}
                                     >
-                                        {e.instanceId.substring(0, 8)}
+                                        {e.instanceId.substring(0, 4)}
                                     </div>
                                 );
                             })}

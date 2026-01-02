@@ -15,7 +15,7 @@ import SingletonView from "./views/SingletonView";
 
 const useStyles = makeStyles({
     card: {
-        width: "100%",
+        flex: "1 1 300px",
         height: "450px",
         display: "flex",
         flexDirection: "column",
@@ -35,12 +35,14 @@ const useStyles = makeStyles({
         ":active": { cursor: "grabbing" },
         overflow: "hidden",
         backgroundColor: "#1a1a1a",
-        borderRadius: "4px"
+        borderRadius: "4px",
+        touchAction: "none"
     },
     content: {
         position: "absolute",
         transformOrigin: "0 0",
-        transition: "transform 0.1s ease-out"
+        transition: "transform 0.1s ease-out",
+        pointerEvents: "none"
     },
     controls: {
         position: "absolute",
@@ -61,17 +63,26 @@ export default function DiCard({ title, color, events, infoLabelTxt }) {
 
     const relevant = events.filter(e => e.lifetime.startsWith(title));
 
-    const onMouseDown = (e) => {
+    const onPointerDown = (e) => {
         setIsDragging(true);
         setStartPos({ x: e.clientX - offset.x, y: e.clientY - offset.y });
+        e.currentTarget.setPointerCapture(e.pointerId);
     };
 
-    const onMouseMove = (e) => {
+    const onPointerMove = (e) => {
         if (!isDragging) return;
         setOffset({
             x: e.clientX - startPos.x,
             y: e.clientY - startPos.y
         });
+    };
+
+    const onWheel = (e) => {
+        if (e.ctrlKey) {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? -0.1 : 0.1;
+            setZoom(prev => Math.min(Math.max(0.2, prev + delta), 3));
+        }
     };
 
     const resetView = () => {
@@ -94,10 +105,10 @@ export default function DiCard({ title, color, events, infoLabelTxt }) {
 
             <div
                 className={s.viewport}
-                onMouseDown={onMouseDown}
-                onMouseMove={onMouseMove}
-                onMouseUp={() => setIsDragging(false)}
-                onMouseLeave={() => setIsDragging(false)}
+                onPointerDown={onPointerDown}
+                onPointerMove={onPointerMove}
+                onPointerUp={() => setIsDragging(false)}
+                onWheel={onWheel}
             >
                 <div
                     className={s.content}
