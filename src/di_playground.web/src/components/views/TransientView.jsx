@@ -44,7 +44,6 @@ export default function TransientView({ events }) {
                 const col = i % itemsPerRow;
                 const x = 40 + (col * colWidth);
                 const y = 20 + (row * rowHeight);
-                console.log(e);
 
                 return (
                     <React.Fragment key={e.instanceId + i}>
