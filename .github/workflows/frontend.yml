@@ -36,7 +36,7 @@ jobs:
 
       - name: Prepare Pages Artifacts
         run: |
-          cd ./di_playground.web
+          cd ./src/di_playground.web
           cp dist/index.html dist/404.html
           echo "di-playground.mathszoke.com" > dist/CNAME
 
