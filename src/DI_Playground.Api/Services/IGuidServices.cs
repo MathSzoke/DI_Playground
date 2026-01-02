@@ -19,4 +19,5 @@ public interface IBuggySingletonService
 {
     Guid ResolveScoped();
     Guid ResolveTransient();
+    Guid ResolveTransientManual();
 }

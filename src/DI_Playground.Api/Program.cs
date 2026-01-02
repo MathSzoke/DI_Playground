@@ -1,3 +1,4 @@
+using DI_Playground.Api.Enum;
 using DI_Playground.Api.Hubs;
 using DI_Playground.Api.Models;
 using DI_Playground.Api.Services;
@@ -43,7 +44,7 @@ app.MapHealthChecks("/health");
 app.MapHub<DiEventsHub>("/hubs/di-events");
 
 app.MapPost("/api/di/run", async (
-    string mode,
+    DiMode mode,
     IServiceProvider provider,
     IHubContext<DiEventsHub> hub
 ) =>
@@ -52,45 +53,48 @@ app.MapPost("/api/di/run", async (
     var index = 0;
 
     using var scope = provider.CreateScope();
+    var scopedProvider = scope.ServiceProvider;
 
-    if (mode == "normal")
+    switch (mode)
     {
-        for (var i = 0; i < 3; i++)
-        {
-            index++;
-            var t = scope.ServiceProvider.GetRequiredService<ITransientGuidService>();
-            await Emit(hub, requestId, "Transient", t.Id, index, true);
-        }
+        case DiMode.Normal:
+            for (var i = 0; i < 3; i++)
+                await Emit(hub, requestId, "Transient", scopedProvider.GetRequiredService<ITransientGuidService>().Id, ++index, true);
 
-        for (var i = 0; i < 3; i++)
-        {
-            index++;
-            var s = scope.ServiceProvider.GetRequiredService<IScopedGuidService>();
-            await Emit(hub, requestId, "Scoped", s.Id, index, i == 0);
-        }
+            var sService = scopedProvider.GetRequiredService<IScopedGuidService>();
+            for (var i = 0; i < 3; i++)
+                await Emit(hub, requestId, "Scoped", sService.Id, ++index, i == 0);
 
-        for (var i = 0; i < 3; i++)
-        {
-            index++;
-            var sg = scope.ServiceProvider.GetRequiredService<ISingletonGuidService>();
-            await Emit(hub, requestId, "Singleton", sg.Id, index, i == 0);
-        }
+            var sgService = scopedProvider.GetRequiredService<ISingletonGuidService>();
+            for (var i = 0; i < 3; i++)
+                await Emit(hub, requestId, "Singleton", sgService.Id, ++index, i == 0);
+            break;
+
+        case DiMode.CaptiveScopedInSingleton:
+            var buggy1 = provider.GetRequiredService<IBuggySingletonService>();
+            await Emit(hub, requestId, "Scoped (CAPTIVE)", buggy1.ResolveScoped(), ++index, true);
+            await Emit(hub, requestId, "Scoped (CAPTIVE)", buggy1.ResolveScoped(), ++index, false);
+            break;
+
+        case DiMode.CaptiveTransientInSingleton:
+            var buggy2 = provider.GetRequiredService<IBuggySingletonService>();
+            await Emit(hub, requestId, "Transient (CAPTIVE)", buggy2.ResolveTransient(), ++index, true);
+            await Emit(hub, requestId, "Transient (CAPTIVE)", buggy2.ResolveTransient(), ++index, false);
+            break;
+
+        case DiMode.CaptiveTransientInScoped:
+            var scopedSvc = scopedProvider.GetRequiredService<IScopedGuidService>();
+            await Emit(hub, requestId, "Transient (IN-SCOPED)", scopedSvc.Id, ++index, true);
+            break;
+
+        case DiMode.ServiceLocatorInSingleton:
+            var buggy3 = provider.GetRequiredService<IBuggySingletonService>();
+            await Emit(hub, requestId, "Transient (LOCATOR)", buggy3.ResolveTransientManual(), ++index, true);
+            await Emit(hub, requestId, "Transient (LOCATOR)", buggy3.ResolveTransientManual(), ++index, true);
+            break;
     }
 
-    if (mode == "bug-scoped-in-singleton")
-    {
-        var buggy = scope.ServiceProvider.GetRequiredService<IBuggySingletonService>();
-
-        index++;
-        var scopedId = buggy.ResolveScoped();
-        await Emit(hub, requestId, "Scoped (BUG)", scopedId, index, true);
-
-        index++;
-        var transientId = buggy.ResolveTransient();
-        await Emit(hub, requestId, "Transient (BUG)", transientId, index, true);
-    }
-
-    return Results.Ok(new { requestId, mode });
+    return Results.Ok(new { requestId, mode = mode.ToString() });
 });
 
 app.Run();

@@ -1,17 +1,19 @@
 ﻿namespace DI_Playground.Api.Services;
 
-public class BuggySingletonService(IServiceProvider provider) : IBuggySingletonService
+public class BuggySingletonService(ITransientGuidService transient, IServiceProvider provider) : IBuggySingletonService
 {
+    private IScopedGuidService? _captiveScoped;
+
+    public Guid ResolveTransient() => transient.Id;
+
     public Guid ResolveScoped()
     {
-        using var scope = provider.CreateScope();
-        var scoped = scope.ServiceProvider.GetRequiredService<IScopedGuidService>();
-        return scoped.Id;
+        this._captiveScoped ??= provider.CreateScope().ServiceProvider.GetRequiredService<IScopedGuidService>();
+        return this._captiveScoped.Id;
     }
 
-    public Guid ResolveTransient()
+    public Guid ResolveTransientManual()
     {
-        var transient = provider.GetRequiredService<ITransientGuidService>();
-        return transient.Id;
+        return provider.GetRequiredService<ITransientGuidService>().Id;
     }
 }
