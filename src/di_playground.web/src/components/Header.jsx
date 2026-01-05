@@ -5,8 +5,7 @@ const useStyles = makeStyles({
     root: {
         display: "flex",
         flexDirection: "column",
-        gap: "12px",
-        maxWidth: "900px"
+        gap: "12px"
     },
     title: {
         display: "flex",
