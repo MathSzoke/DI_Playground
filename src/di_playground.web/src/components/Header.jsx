@@ -25,7 +25,7 @@ export default function Header() {
 
     return (
         <div className={s.root}>
-            <div class name={s.title}>
+            <div className={s.title}>
             <Text align="center" as="h1" size={900} weight="semibold">
                 Dependency Injection
             </Text>
