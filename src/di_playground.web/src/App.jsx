@@ -4,18 +4,18 @@ import Controls from "./components/Controls";
 import DiCard from "./components/DiCard";
 import Timeline from "./components/Timeline";
 import { startSignalR, stopSignalR } from "./components/signalr";
-import { makeStyles } from '@fluentui/react-components';
+import { makeStyles } from "@fluentui/react-components";
 
 const useStyles = makeStyles({
     root: {
-        padding: '24px',
+        padding: "24px",
         display: "flex",
         flexDirection: "column",
-        gap: '24px'
+        gap: "24px"
     },
     cardsContainer: {
         display: "flex",
-        gap: '12px',
+        gap: "12px",
         flexWrap: "wrap",
         justifyContent: "space-between",
         "@media (max-width: 900px)": {
@@ -28,16 +28,20 @@ export default function App() {
     const s = useStyles();
     const [events, setEvents] = useState([]);
     const [requests, setRequests] = useState([]);
+    const [signalRReady, setSignalRReady] = useState(false);
 
     useEffect(() => {
-        startSignalR(evt => {
-            setEvents(prev => [...prev, evt]);
-            setRequests(prev =>
-                prev.includes(evt.requestId)
-                    ? prev
-                    : [...prev, evt.requestId]
-            );
-        });
+        startSignalR(
+            evt => {
+                setEvents(prev => [...prev, evt]);
+                setRequests(prev =>
+                    prev.includes(evt.requestId)
+                        ? prev
+                        : [...prev, evt.requestId]
+                );
+            },
+            () => setSignalRReady(true)
+        );
 
         return () => {
             stopSignalR();
@@ -47,7 +51,7 @@ export default function App() {
     return (
         <div className={s.root}>
             <Header />
-            <Controls />
+            <Controls disabled={!signalRReady} />
 
             <div className={s.cardsContainer}>
                 <DiCard
