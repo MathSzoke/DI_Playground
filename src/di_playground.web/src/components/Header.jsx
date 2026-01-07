@@ -7,12 +7,16 @@ const useStyles = makeStyles({
         flexDirection: "column",
         gap: "12px"
     },
-    title: {
+    titleContainer: {
         display: "flex",
         flexDirection: "column"
     },
+    title: {
+        marginBottom: 0,
+    },
     subtitle: {
-        opacity: 0.85
+        opacity: 0.85,
+        marginTop: 0,
     },
     description: {
         lineHeight: "1.6",
@@ -25,14 +29,14 @@ export default function Header() {
 
     return (
         <div className={s.root}>
-            <div className={s.title}>
-            <Text align="center" as="h1" size={900} weight="semibold">
-                Dependency Injection
-            </Text>
-
-            <Text align="center" as="h2" size={500} className={s.subtitle}>
-                with visual feedback
-            </Text>
+            <div className={s.titleContainer}>
+                <Text align="center" as="h1" size={900} weight="semibold" className={s.title}>
+                    Dependency Injection
+                </Text>
+    
+                <Text align="center" as="h2" size={500} className={s.subtitle}>
+                    with visual feedback
+                </Text>
             </div>
             <Text as="p" size={400} className={s.description}>
                 Dependency Injection (DI) is a design pattern that removes the responsibility of creating dependencies from a class and delegates it to an external container.
