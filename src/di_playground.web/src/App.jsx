@@ -40,7 +40,7 @@ export default function App() {
                         : [...prev, evt.requestId]
                 );
             },
-            () => setSignalRReady(true)
+            status => setSignalRReady(status)
         );
 
         return () => {
